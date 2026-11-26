@@ -1,0 +1,191 @@
+.registration-form {
+    display: grid;
+    gap: 12px;
+    margin-top: 24px;
+}
+
+.registration-form h3,
+.registration-form p {
+    margin: 0;
+}
+
+.registration-form input:not([type="checkbox"]) {
+    width: 100%;
+    padding: 12px;
+    color: #e8edf5;
+    background: #101722;
+    border: 1px solid #46556b;
+    border-radius: 8px;
+    font: inherit;
+}
+
+.registration-form button {
+    padding: 12px;
+    color: #e8edf5;
+    background: #285593;
+    border: 1px solid #527eb8;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.registration-form button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.button-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.registration-notice {
+    margin-top: 18px;
+    color: #ffe0a3;
+}
+
+.device-hint {
+    margin: 0;
+    color: #bac6d6;
+    font-size: 0.9rem;
+}
+
+.device-list {
+    display: grid;
+    gap: 10px;
+    margin-top: 28px;
+}
+
+.device-list h3,
+.device-list p {
+    margin: 0;
+}
+
+.device-card {
+    display: grid;
+    gap: 6px;
+    padding: 14px;
+    color: #bac6d6;
+    background: #101722;
+    border: 1px solid #354154;
+    border-radius: 8px;
+    font-size: 0.9rem;
+}
+
+.device-card strong {
+    color: #e8edf5;
+}
+
+.notification-list {
+    display: grid;
+    gap: 10px;
+    margin-top: 28px;
+}
+
+.notification-list h3,
+.notification-list p {
+    margin: 0;
+}
+
+.notification-card {
+    display: grid;
+    gap: 6px;
+    padding: 14px;
+    color: #bac6d6;
+    background: #101722;
+    border: 1px solid #354154;
+    border-radius: 8px;
+}
+
+.notification-card small {
+    color: #9aa8bc;
+}
+
+.notification-card.read {
+    opacity: 0.7;
+}
+
+.notification-card button {
+    justify-self: start;
+    padding: 8px 12px;
+    color: #e8edf5;
+    background: #285593;
+    border: 1px solid #527eb8;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.notification-card button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.user-search {
+    display: grid;
+    gap: 10px;
+    margin-top: 28px;
+}
+
+.user-search h3,
+.user-search p {
+    margin: 0;
+}
+
+.user-result {
+    display: grid;
+    gap: 6px;
+    padding: 14px;
+    overflow-wrap: anywhere;
+    color: #bac6d6;
+    background: #101722;
+    border: 1px solid #354154;
+    border-radius: 8px;
+}
+
+.user-result strong {
+    color: #e8edf5;
+}
+
+.user-search .user-search-note {
+    color: #9aa8bc;
+    font-size: 0.85rem;
+}
+
+.incoming-requests {
+    display: grid;
+    gap: 10px;
+    margin-top: 28px;
+}
+
+.incoming-requests h3,
+.incoming-requests p {
+    margin: 0;
+}
+
+.contacts-list {
+    display: grid;
+    gap: 10px;
+    margin-top: 28px;
+}
+
+.contacts-list h3,
+.contacts-list p {
+    margin: 0;
+}
+
+.blocked-users {
+    display: grid;
+    gap: 10px;
+    margin-top: 28px;
+}
+
+.blocked-users h3,
+.blocked-users p {
+    margin: 0;
+}

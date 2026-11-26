@@ -1,0 +1,746 @@
+.workspace {
+    --ws-bg: #ffffff;
+    --ws-panel: #ffffff;
+    --ws-surface: #f6f8fb;
+    --ws-border: #e2e8f0;
+    --ws-text: #14233a;
+    --ws-muted: #62748c;
+    --ws-accent: #079bd7;
+    --ws-accent-soft: #e5f7fe;
+    --ws-accent-text: #0b7fae;
+    --ws-warning-text: #9a5b00;
+    --ws-warning-bg: #fff4dc;
+
+    flex: 1;
+    display: grid;
+    grid-template-columns: 260px minmax(0, 1fr) 300px;
+    height: 100vh;
+    color: var(--ws-text);
+    background: var(--ws-bg);
+}
+
+.workspace[data-theme="dark"] {
+    --ws-bg: #10141c;
+    --ws-panel: #151b26;
+    --ws-surface: #1c2533;
+    --ws-border: #303a4b;
+    --ws-text: #e8edf5;
+    --ws-muted: #9aa8bc;
+    --ws-accent: #1f8fc4;
+    --ws-accent-soft: #17303f;
+    --ws-accent-text: #8ed4f5;
+    --ws-warning-text: #ffe0a3;
+    --ws-warning-bg: #493720;
+}
+
+/* ---------- Sidebar ---------- */
+
+.ws-sidebar {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    overflow-y: auto;
+    background: var(--ws-panel);
+    border-right: 1px solid var(--ws-border);
+}
+
+.ws-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 18px 20px;
+    font-size: 1.1rem;
+    border-bottom: 1px solid var(--ws-border);
+}
+
+.ws-brand strong span {
+    color: var(--ws-accent);
+}
+
+.ws-brand-icon {
+    display: grid;
+    place-items: center;
+    width: 34px;
+    height: 34px;
+    background: var(--ws-accent);
+    border-radius: 10px;
+    font-size: 0.95rem;
+}
+
+.ws-nav {
+    display: grid;
+    gap: 4px;
+    padding: 12px;
+}
+
+.ws-nav-label {
+    margin: 12px 8px 6px;
+    color: var(--ws-muted);
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.ws-nav button {
+    padding: 11px 12px;
+    text-align: left;
+    color: var(--ws-muted);
+    background: transparent;
+    border: 0;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.ws-nav button:hover {
+    background: var(--ws-surface);
+}
+
+.ws-nav button.active {
+    color: var(--ws-accent-text);
+    background: var(--ws-accent-soft);
+    font-weight: 600;
+}
+
+.ws-sidebar-footer {
+    display: grid;
+    gap: 10px;
+    margin-top: auto;
+    padding: 12px;
+    border-top: 1px solid var(--ws-border);
+}
+
+.ws-theme {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 10px;
+    color: var(--ws-muted);
+    background: var(--ws-surface);
+    border-radius: 10px;
+    font-size: 0.85rem;
+}
+
+.ws-theme-buttons {
+    display: flex;
+    gap: 4px;
+}
+
+.ws-theme-buttons button {
+    padding: 5px 10px;
+    color: var(--ws-muted);
+    background: transparent;
+    border: 0;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.85rem;
+}
+
+.ws-theme-buttons button.active {
+    color: var(--ws-text);
+    background: var(--ws-panel);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+    font-weight: 600;
+}
+
+.ws-account {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    background: var(--ws-surface);
+    border-radius: 10px;
+}
+
+.ws-avatar {
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    width: 36px;
+    height: 36px;
+    color: #ffffff;
+    background: #f59e0b;
+    border-radius: 50%;
+    font-weight: 700;
+}
+
+.ws-account-text {
+    display: grid;
+    flex: 1;
+    min-width: 0;
+}
+
+.ws-account-text strong {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.ws-account-text small {
+    color: var(--ws-muted);
+    font-family: monospace;
+}
+
+.ws-logout {
+    flex-shrink: 0;
+    padding: 6px 10px;
+    color: var(--ws-text);
+    background: var(--ws-panel);
+    border: 1px solid var(--ws-border);
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.8rem;
+}
+
+.ws-logout:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* ---------- Center workspace ---------- */
+
+.ws-main {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 0;
+}
+
+.ws-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 24px;
+    border-bottom: 1px solid var(--ws-border);
+}
+
+.ws-header h2 {
+    margin: 0;
+    font-size: 1.2rem;
+}
+
+.ws-pill {
+    padding: 4px 10px;
+    color: var(--ws-warning-text);
+    background: var(--ws-warning-bg);
+    border-radius: 999px;
+    font-size: 0.75rem;
+}
+
+.ws-banner {
+    margin: 0;
+    padding: 12px 24px;
+    color: var(--ws-accent-text);
+    background: var(--ws-accent-soft);
+}
+
+.ws-body {
+    flex: 1;
+    min-height: 0;
+    padding: 24px;
+    overflow-y: auto;
+}
+
+.ws-section {
+    display: grid;
+    gap: 8px;
+    width: min(100%, 720px);
+    margin: 0 auto;
+}
+
+.ws-section h3 {
+    margin: 0;
+}
+
+.ws-section>section:first-child {
+    margin-top: 0;
+}
+
+.ws-empty {
+    display: grid;
+    place-content: center;
+    justify-items: center;
+    gap: 12px;
+    min-height: 100%;
+    text-align: center;
+}
+
+.ws-empty h3,
+.ws-empty p {
+    margin: 0;
+}
+
+.ws-empty p {
+    max-width: 460px;
+    color: var(--ws-muted);
+    line-height: 1.6;
+}
+
+.ws-empty-icon {
+    display: grid;
+    place-items: center;
+    width: 72px;
+    height: 72px;
+    background: var(--ws-accent-soft);
+    border-radius: 20px;
+    font-size: 1.8rem;
+}
+
+.ws-quick-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 12px;
+}
+
+.ws-quick-actions button {
+    min-width: 150px;
+    padding: 18px 22px;
+    color: var(--ws-accent-text);
+    background: var(--ws-panel);
+    border: 1px solid var(--ws-border);
+    border-radius: 14px;
+    cursor: pointer;
+}
+
+.ws-quick-actions button:hover {
+    background: var(--ws-accent-soft);
+}
+
+.ws-composer {
+    display: flex;
+    gap: 10px;
+    padding: 14px 24px;
+    border-top: 1px solid var(--ws-border);
+}
+
+.ws-composer input {
+    flex: 1;
+    min-width: 0;
+    padding: 12px 14px;
+    color: var(--ws-text);
+    background: var(--ws-surface);
+    border: 1px solid var(--ws-border);
+    border-radius: 10px;
+    font: inherit;
+}
+
+.ws-composer button {
+    padding: 12px 18px;
+    color: #ffffff;
+    background: var(--ws-accent);
+    border: 0;
+    border-radius: 10px;
+}
+
+.ws-composer button:disabled,
+.ws-composer input:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* ---------- Right panel ---------- */
+
+.ws-aside {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    min-height: 0;
+    padding: 20px 16px;
+    overflow-y: auto;
+    background: var(--ws-panel);
+    border-left: 1px solid var(--ws-border);
+}
+
+.ws-card {
+    display: grid;
+    gap: 8px;
+    padding: 18px;
+    background: var(--ws-surface);
+    border: 1px solid var(--ws-border);
+    border-radius: 14px;
+}
+
+.ws-card.centered {
+    text-align: center;
+}
+
+.ws-card h3,
+.ws-card p {
+    margin: 0;
+}
+
+.ws-card h3 {
+    font-size: 1rem;
+}
+
+.ws-card p {
+    color: var(--ws-muted);
+    font-size: 0.88rem;
+    line-height: 1.5;
+}
+
+.ws-card .ws-id {
+    font-family: monospace;
+    overflow-wrap: anywhere;
+}
+
+.ws-card button {
+    padding: 9px 12px;
+    color: #ffffff;
+    background: var(--ws-accent);
+    border: 0;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+/* ---------- Existing components inside the workspace ---------- */
+
+.workspace .registration-form input:not([type="checkbox"]) {
+    color: var(--ws-text);
+    background: var(--ws-surface);
+    border-color: var(--ws-border);
+}
+
+.workspace .registration-form button,
+.workspace .notification-card button {
+    color: #ffffff;
+    background: var(--ws-accent);
+    border-color: var(--ws-accent);
+}
+
+.workspace .device-card,
+.workspace .user-result,
+.workspace .notification-card {
+    color: var(--ws-muted);
+    background: var(--ws-surface);
+    border-color: var(--ws-border);
+}
+
+.workspace .device-card strong,
+.workspace .user-result strong,
+.workspace .notification-card span {
+    color: var(--ws-text);
+}
+
+.workspace .notification-card small,
+.workspace .user-search .user-search-note {
+    color: var(--ws-muted);
+}
+
+.workspace .warning {
+    margin: 0;
+    color: var(--ws-warning-text);
+}
+
+/* ---------- Smaller screens ---------- */
+
+@media (max-width: 1100px) {
+    .workspace {
+        grid-template-columns: 240px minmax(0, 1fr);
+    }
+
+    /* The public ID is still available under Settings. */
+    .ws-aside {
+        display: none;
+    }
+}
+
+@media (max-width: 760px) {
+    .workspace {
+        display: flex;
+        flex-direction: column;
+        height: auto;
+        min-height: 100vh;
+    }
+
+    .ws-sidebar {
+        overflow: visible;
+        border-right: 0;
+        border-bottom: 1px solid var(--ws-border);
+    }
+
+    .ws-nav {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        padding: 10px 12px;
+    }
+
+    .ws-nav-label {
+        display: none;
+    }
+
+    .ws-sidebar-footer {
+        margin-top: 0;
+    }
+
+    .ws-main {
+        flex: 1;
+    }
+
+    .ws-body {
+        padding: 16px;
+        overflow: visible;
+    }
+
+    .ws-empty {
+        min-height: 320px;
+    }
+}
+
+/* Chat preview */
+
+.ws-chat-preview {
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+}
+
+.ws-chat-contact {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 16px;
+    background: var(--ws-surface);
+    border: 1px solid var(--ws-border);
+    border-radius: 12px;
+}
+
+.ws-chat-contact h3,
+.ws-chat-contact p {
+    margin: 0;
+}
+
+.ws-chat-contact p {
+    margin-top: 6px;
+    color: var(--ws-muted);
+    font-size: 0.85rem;
+    overflow-wrap: anywhere;
+}
+
+.ws-chat-contact button {
+    padding: 9px 12px;
+    color: var(--ws-accent-text);
+    background: var(--ws-panel);
+    border: 1px solid var(--ws-border);
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.ws-chat-contact button:hover {
+    background: var(--ws-accent-soft);
+}
+
+.ws-chat-preview .ws-empty {
+    flex: 1;
+    min-height: 300px;
+}
+
+/* Plaintext direct-chat prototype */
+
+.direct-chat {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    min-height: 100%;
+}
+
+.direct-chat-warning {
+    margin: 0;
+    padding: 10px 12px;
+    color: var(--ws-warning-text);
+    background: var(--ws-warning-bg);
+    border-radius: 8px;
+    font-size: 0.9rem;
+}
+
+.direct-chat-toolbar button,
+.direct-chat-composer button {
+    padding: 9px 14px;
+    color: #ffffff;
+    background: var(--ws-accent);
+    border: 0;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.direct-chat button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.direct-chat-error {
+    margin: 0;
+    color: var(--ws-warning-text);
+}
+
+.direct-chat-empty {
+    color: var(--ws-muted);
+}
+
+.direct-chat-messages {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.direct-message {
+    width: fit-content;
+    max-width: min(80%, 600px);
+    padding: 12px;
+    background: var(--ws-surface);
+    border: 1px solid var(--ws-border);
+    border-radius: 12px;
+    overflow-wrap: anywhere;
+}
+
+.direct-message.mine {
+    align-self: flex-end;
+    background: var(--ws-accent-soft);
+}
+
+.direct-message.theirs {
+    align-self: flex-start;
+}
+
+.direct-message p {
+    margin: 8px 0;
+    white-space: pre-wrap;
+}
+
+.direct-message small {
+    color: var(--ws-muted);
+}
+
+.direct-chat-composer {
+    display: grid;
+    gap: 8px;
+    padding-top: 14px;
+    border-top: 1px solid var(--ws-border);
+}
+
+.direct-chat-composer textarea {
+    width: 100%;
+    padding: 12px;
+    color: var(--ws-text);
+    background: var(--ws-surface);
+    border: 1px solid var(--ws-border);
+    border-radius: 8px;
+    font: inherit;
+    resize: vertical;
+}
+
+/* Sent / Delivered label */
+.direct-message-status {
+    display: block;
+    margin-top: 4px;
+    font-size: 0.75rem;
+    text-align: right;
+}
+
+.direct-message-status.delivered {
+    color: var(--ws-accent-text);
+    font-weight: 600;
+}
+
+.message-text {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+.message-link {
+    display: inline;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--ws-accent-text);
+    font: inherit;
+    text-align: left;
+    text-decoration: underline;
+    overflow-wrap: anywhere;
+    cursor: pointer;
+}
+
+.message-link:hover {
+    text-decoration-thickness: 2px;
+}
+
+.link-warning-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    background: rgba(0, 0, 0, 0.65);
+}
+
+.link-warning-dialog {
+    width: min(100%, 480px);
+    max-height: 90vh;
+    overflow-y: auto;
+    padding: 1.25rem;
+    border: 1px solid var(--ws-border);
+    border-radius: 12px;
+    background: var(--ws-panel);
+    color: var(--ws-text);
+}
+
+.link-warning-dialog h3 {
+    margin-top: 0;
+}
+
+.link-warning-destination {
+    padding: 0.75rem;
+    border: 1px solid var(--ws-border);
+    border-radius: 8px;
+    background: var(--ws-surface);
+    color: var(--ws-text);
+    overflow-wrap: anywhere;
+    white-space: pre-wrap;
+}
+
+.link-warning-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+}
+
+.link-warning-actions button,
+.link-warning-actions a {
+    padding: 0.5rem 0.9rem;
+    border: 1px solid var(--ws-border);
+    border-radius: 8px;
+    background: var(--ws-surface);
+    color: var(--ws-text);
+    font: inherit;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.link-warning-actions button:hover,
+.link-warning-actions a:hover {
+    background: var(--ws-accent-soft);
+}
+
+.contact-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.unread-badge {
+    padding: 2px 8px;
+    color: var(--ws-accent-text);
+    background: var(--ws-accent-soft);
+    border: 1px solid var(--ws-border);
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 700;
+}

@@ -1,0 +1,2 @@
+ALTER TABLE direct_messages
+ADD COLUMN recipient_seen_at TIMESTAMP NULL DEFAULT NULL;

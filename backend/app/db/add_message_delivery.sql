@@ -1,0 +1,2 @@
+ALTER TABLE direct_messages
+    ADD COLUMN delivered_at TIMESTAMP NULL DEFAULT NULL;

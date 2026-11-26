@@ -1,0 +1,98 @@
+:root {
+    font-family: Arial, sans-serif;
+    color: #e8edf5;
+    background: #10141c;
+    font-synthesis: none;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    min-width: 320px;
+}
+
+button {
+    font: inherit;
+}
+
+.app {
+    display: flex;
+    min-height: 100vh;
+}
+
+.page-area {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.content {
+    flex: 1;
+    display: grid;
+    place-items: center;
+    padding: 32px;
+}
+
+.welcome-card {
+    width: min(100%, 560px);
+    padding: 32px;
+    background: #19212e;
+    border: 1px solid #354154;
+    border-radius: 14px;
+}
+
+.welcome-card h2 {
+    margin-top: 20px;
+}
+
+.welcome-card p {
+    color: #bac6d6;
+    line-height: 1.6;
+}
+
+.badge {
+    display: inline-block;
+    padding: 6px 10px;
+    color: #ffe0a3;
+    background: #493720;
+    border-radius: 6px;
+    font-size: 0.8rem;
+}
+
+.welcome-card .warning {
+    margin-bottom: 0;
+    color: #ffe0a3;
+}
+
+.page-switcher {
+    display: flex;
+    gap: 8px;
+    padding: 20px 32px 0;
+}
+
+.page-switcher button {
+    padding: 10px 16px;
+    color: #e8edf5;
+    background: #1c2533;
+    border: 1px solid #46556b;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+@media (max-width: 600px) {
+    .content {
+        padding: 20px;
+    }
+
+    .welcome-card {
+        padding: 24px;
+    }
+
+    .page-switcher {
+        padding: 20px 20px 0;
+    }
+}
