@@ -67,7 +67,7 @@ export default function HomePage() {
     } catch {
       setNotice(
         "Registration could not be confirmed. Keep your key: the request " +
-          "may have reached the server. Login testing will be added next.",
+          "may have reached the server. Try logging in before retrying.",
       );
     } finally {
       setBusy(false);
@@ -89,8 +89,8 @@ export default function HomePage() {
         <span className="badge">Unaudited local prototype</span>
         <h2>Welcome to LockTalk</h2>
         <p>
-          Create a test account. Messaging and encryption are not implemented
-          yet, so do not use sensitive information.
+          Create a test account. Messages are stored as plaintext and are not
+          end-to-end encrypted. Do not use sensitive information.
         </p>
 
         {!accountKey && !account && (
@@ -156,8 +156,8 @@ export default function HomePage() {
           <section className="registration-form">
             <h3>Account created</h3>
             <p>
-              Save this public user ID too. You’ll need it along with your
-              account key to log in.
+              Save this public user ID too. Other users need it to find you.
+              Use your display name and account key to log in.
             </p>
             <label htmlFor="user-id">Public user ID</label>
             <input id="user-id" value={account.user_id} readOnly />
