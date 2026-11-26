@@ -9,55 +9,6 @@ import {
 } from "../services/devices.js";
 import "../styles/registration.css";
 
-// Pull a human-readable message out of whatever the backend threw.
-// Handles: DeviceApiError, FastAPI 422 bodies (detail: string | [{loc, msg}...]),
-// network TypeErrors, and generic Errors.
-function describeError(error) {
-  if (error instanceof DeviceApiError) {
-    // If the API layer attached the parsed body, prefer its detail.
-    const detail = error.body?.detail ?? error.detail;
-    if (detail) return formatDetail(detail);
-    return error.message;
-  }
-
-  if (error instanceof TypeError) {
-    return "Could not reach the backend. Is LockTalk running?";
-  }
-
-  // Some services throw plain Error with a JSON string message.
-  if (typeof error?.message === "string") {
-    const maybeJson = tryParseJson(error.message);
-    if (maybeJson?.detail) return formatDetail(maybeJson.detail);
-    if (error.message) return error.message;
-  }
-
-  return "Could not log in. Please try again.";
-}
-
-function formatDetail(detail) {
-  if (typeof detail === "string") return detail;
-  if (Array.isArray(detail)) {
-    // FastAPI validation errors: [{ loc: ["body","display_name"], msg: "..." }]
-    return detail
-      .map((item) => {
-        const field = Array.isArray(item?.loc)
-          ? item.loc[item.loc.length - 1]
-          : "field";
-        return `${field}: ${item?.msg ?? "invalid"}`;
-      })
-      .join("; ");
-  }
-  return String(detail);
-}
-
-function tryParseJson(text) {
-  try {
-    return JSON.parse(text);
-  } catch {
-    return null;
-  }
-}
-
 export default function LoginPage({ onLogin }) {
   const [displayName, setDisplayName] = useState("");
   const [accountKey, setAccountKey] = useState("");
@@ -67,6 +18,14 @@ export default function LoginPage({ onLogin }) {
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
 
+  function describeError(error) {
+    if (error instanceof DeviceApiError) return error.message;
+    if (error instanceof TypeError) {
+      return "Could not reach the backend. Is LockTalk running?";
+    }
+    return error?.message || "Could not log in. Please try again.";
+  }
+
   async function finishAsNewDevice(ticket, id, name) {
     const result = await registerNewDevice(ticket, name, id);
     onLogin(result);
@@ -75,19 +34,6 @@ export default function LoginPage({ onLogin }) {
   async function handleSubmit(event) {
     event.preventDefault();
     if (busy) return;
-
-    // Trim first so whitespace-only input is caught here, not by the backend.
-    const name = displayName.trim();
-    const key = accountKey.trim();
-
-    if (!name) {
-      setMessage("Please enter your display name.");
-      return;
-    }
-    if (!key) {
-      setMessage("Please enter your account key.");
-      return;
-    }
 
     if (!deviceCryptoAvailable()) {
       setMessage(
@@ -100,7 +46,8 @@ export default function LoginPage({ onLogin }) {
     setMessage("");
 
     try {
-      const account = await login(name, key);
+      const account = await login(displayName.trim(), accountKey.trim());
+      setAccountKey("");
 
       // The backend returns the public ID after checking the credentials.
       const id = account.user_id;
@@ -130,9 +77,6 @@ export default function LoginPage({ onLogin }) {
     } catch (error) {
       setMessage(describeError(error));
     } finally {
-      // Always clear the key from state once the request completes,
-      // whether it succeeded or failed.
-      setAccountKey("");
       setBusy(false);
     }
   }
@@ -144,10 +88,6 @@ export default function LoginPage({ onLogin }) {
     const name = deviceName.trim();
     if (!name) {
       setMessage("Please enter a device name.");
-      return;
-    }
-    if (name.length > 100) {
-      setMessage("Device name must be 100 characters or fewer.");
       return;
     }
 
