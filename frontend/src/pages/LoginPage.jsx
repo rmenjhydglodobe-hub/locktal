@@ -163,10 +163,10 @@ export default function LoginPage({ onLogin }) {
       <div className="welcome-card">
         <span className="badge">Unaudited local prototype</span>
         <h2>Login</h2>
-        <p>Enter your display name and account key.</p>
+        <p>Enter your display name or public user ID, and your account key.</p>
 
         <form className="registration-form" onSubmit={handleSubmit}>
-          <label htmlFor="login-display-name">Display name tEST</label>
+          <label htmlFor="login-display-name">Display name or public user ID</label>
           <input
             id="login-display-name"
             value={displayName}

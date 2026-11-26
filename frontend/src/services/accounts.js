@@ -21,25 +21,35 @@ export async function registerAccount(displayName, accountKey) {
   return data;
 }
 
-export async function login(displayName, accountKey) {
+export async function login(identifier, accountKey) {
+  const trimmed = identifier.trim();
+  const body = {
+    account_key: accountKey.trim(),
+  };
+
+  if (/^[0-9a-f]{32}$/i.test(trimmed)) {
+    body.user_id = trimmed.toLowerCase();
+  } else {
+    body.display_name = trimmed;
+  }
+
   const response = await fetch(`${API_URL}/accounts/login`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      display_name: displayName,
-      account_key: accountKey,
-    }),
+    body: JSON.stringify(body),
   });
 
-  if (response.status === 401 || response.status === 422) {
-    throw new Error("Invalid display name or account key.");
-  }
+  const data = await response.json().catch(() => ({}));
 
   if (!response.ok) {
-    throw new Error("Could not log in. Please try again.");
+    throw new Error(
+      typeof data.detail === "string"
+        ? data.detail
+        : "Could not log in. Please try again.",
+    );
   }
 
-  return response.json();
+  return data;
 }
 
 export async function getCurrentSession(token) {
