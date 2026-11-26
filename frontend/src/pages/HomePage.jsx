@@ -64,11 +64,19 @@ export default function HomePage() {
     try {
       const result = await registerAccount(displayName.trim(), accountKey);
       setAccount(result);
-    } catch {
-      setNotice(
-        "Registration could not be confirmed. Keep your key: the request " +
-          "may have reached the server. Try logging in before retrying.",
-      );
+    } catch (error) {
+      if (error instanceof TypeError) {
+        setNotice(
+          "Could not reach the backend. Keep your key: the request may not " +
+            "have reached the server. Check that LockTalk is running, then retry.",
+        );
+      } else {
+        setNotice(
+          (error?.message || "Registration failed.") +
+            " Keep your key. If you are not sure whether the account was " +
+            "created, try logging in before retrying.",
+        );
+      }
     } finally {
       setBusy(false);
     }

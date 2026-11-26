@@ -134,18 +134,22 @@ def register_account(request: RegistrationRequest):
 class LoginRequest(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
-    display_name: str = Field(min_length=1, max_length=100)
+    user_id: str = Field(min_length=32, max_length=32)
     account_key: str = Field(min_length=64, max_length=64)
 
 
 @router.post("/login")
 def login_account(request: LoginRequest):
-    display_name = request.display_name.strip()
-
-    if not display_name or not KEY_PATTERN.fullmatch(request.account_key):
+    if not re.fullmatch(r"[0-9a-f]{32}", request.user_id):
         raise HTTPException(
             status_code=401,
-            detail="Invalid display name or account key.",
+            detail="Invalid user ID or account key.",
+        )
+
+    if not KEY_PATTERN.fullmatch(request.account_key):
+        raise HTTPException(
+            status_code=401,
+            detail="Invalid user ID or account key.",
         )
 
     key_hash = hashlib.sha256(bytes.fromhex(request.account_key)).digest()
@@ -154,52 +158,70 @@ def login_account(request: LoginRequest):
         connection = get_connection()
         try:
             with connection.cursor() as cursor:
-                # Display names can be duplicated, so decrypt only rows
-                # with this display name and compare hashes in memory.
+                cursor.execute("SHOW COLUMNS FROM accounts")
+                columns = {row[0] for row in cursor.fetchall()}
+
+                if "encrypted_account_key_hash" in columns:
+                    hash_column = "encrypted_account_key_hash"
+                    encrypted = True
+                elif "account_key_hash" in columns:
+                    hash_column = "account_key_hash"
+                    encrypted = False
+                else:
+                    raise HTTPException(
+                        status_code=503,
+                        detail="Database schema is not compatible. Please update the accounts table.",
+                    )
+
                 cursor.execute(
-                    """
-                    SELECT user_id, encrypted_account_key_hash
+                    f"""
+                    SELECT user_id, {hash_column}
                     FROM accounts
-                    WHERE display_name = %s
+                    WHERE user_id = %s
                     """,
-                    (display_name,),
+                    (request.user_id,),
                 )
-                rows = cursor.fetchall()
+                row = cursor.fetchone()
         finally:
             connection.close()
 
+    except HTTPException:
+        raise
     except (pymysql.MySQLError, OSError, KeyError, ValueError):
         raise HTTPException(
             status_code=503,
             detail="Database unavailable. Please try again later.",
         ) from None
 
-    matched_user_id = None
-
-    for row in rows:
-        try:
-            stored_hash = decrypt_account_key_hash(row[1])
-        except AccountKeyCryptoError:
-            raise HTTPException(
-                status_code=503,
-                detail="Account key storage is not configured.",
-            ) from None
-
-        if secrets.compare_digest(stored_hash, key_hash):
-            matched_user_id = row[0]
-            break
-
-    if matched_user_id is None:
-        # Keep a dummy comparison when no account matched.
+    if row is None:
         secrets.compare_digest(key_hash, bytes(32))
         raise HTTPException(
             status_code=401,
-            detail="Invalid display name or account key.",
+            detail="Invalid user ID or account key.",
         )
 
-    ticket = create_login_ticket(matched_user_id)
+    try:
+        if encrypted:
+            stored_hash = decrypt_account_key_hash(row[1])
+        else:
+            stored_hash = bytes(row[1])
+            if len(stored_hash) == 64:
+                stored_hash = stored_hash[:32]
+    except AccountKeyCryptoError:
+        raise HTTPException(
+            status_code=503,
+            detail="Account key storage is not configured.",
+        ) from None
+
+    if len(stored_hash) != 32 or not secrets.compare_digest(stored_hash, key_hash):
+        raise HTTPException(
+            status_code=401,
+            detail="Invalid user ID or account key.",
+        )
+
+    ticket = create_login_ticket(request.user_id)
 
     return {
-        "user_id": matched_user_id,
+        "user_id": request.user_id,
         "login_ticket": ticket,
     }
