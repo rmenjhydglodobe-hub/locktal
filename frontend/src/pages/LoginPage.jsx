@@ -166,7 +166,7 @@ export default function LoginPage({ onLogin }) {
         <p>Enter your display name and account key.</p>
 
         <form className="registration-form" onSubmit={handleSubmit}>
-          <label htmlFor="login-display-name">Display name</label>
+          <label htmlFor="login-display-name">Display name tEST</label>
           <input
             id="login-display-name"
             value={displayName}
