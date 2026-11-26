@@ -1,8 +1,11 @@
+import re
+
 import pymysql
 from fastapi import APIRouter, Header, HTTPException, Query
 
 from app.api.sessions import get_session
 from app.db.connection import get_connection
+
 
 router = APIRouter(prefix="/users", tags=["users"])
 
@@ -15,10 +18,10 @@ def search_users(
     session = get_session(authorization)
     query = q.strip()
 
-    if len(query) < 2:
+    if not re.fullmatch(r"[0-9a-f]{32}", query):
         raise HTTPException(
             status_code=400,
-            detail="Enter at least two characters to search.",
+            detail="Enter the full public user ID.",
         )
 
     try:
@@ -29,12 +32,10 @@ def search_users(
                     """
                     SELECT user_id, display_name
                     FROM accounts
-                    WHERE user_id <> %s
-                      AND (user_id = %s OR LOCATE(%s, display_name) > 0)
-                    ORDER BY display_name, user_id
-                    LIMIT 20
+                    WHERE user_id = %s
+                      AND user_id <> %s
                     """,
-                    (session["user_id"], query, query),
+                    (query, session["user_id"]),
                 )
                 rows = cursor.fetchall()
         finally:

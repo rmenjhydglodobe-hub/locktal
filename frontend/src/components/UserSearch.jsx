@@ -3,6 +3,8 @@ import { searchUsers } from "../services/users.js";
 import { sendMessageRequest } from "../services/messageRequests.js";
 import BlockButton from "./BlockButton.jsx";
 
+const USER_ID_PATTERN = /^[0-9a-f]{32}$/;
+
 export default function UserSearch({ sessionToken, onRequestChanged }) {
   const [query, setQuery] = useState("");
   const [users, setUsers] = useState([]);
@@ -13,12 +15,19 @@ export default function UserSearch({ sessionToken, onRequestChanged }) {
 
   async function handleSearch(event) {
     event.preventDefault();
+    if (loading) return;
 
     const value = query.trim();
-    if (value.length < 2 || loading) return;
+    setUsers([]);
+    setSearched(false);
+    setMessage("");
+
+    if (!USER_ID_PATTERN.test(value)) {
+      setMessage("Enter the full public user ID: 32 lowercase letters and numbers.");
+      return;
+    }
 
     setLoading(true);
-    setMessage("");
 
     try {
       const result = await searchUsers(sessionToken, value);
@@ -59,15 +68,16 @@ export default function UserSearch({ sessionToken, onRequestChanged }) {
   return (
     <section className="user-search">
       <h3>Find users</h3>
-      <p>Search by display name or full public user ID.</p>
+      <p>Search using the full public user ID.</p>
 
       <form className="registration-form" onSubmit={handleSearch}>
-        <label htmlFor="user-search-query">Name or public user ID</label>
+        <label htmlFor="user-search-query">Public user ID</label>
         <input
           id="user-search-query"
           value={query}
           onChange={(event) => setQuery(event.target.value)}
-          maxLength={100}
+          maxLength={32}
+          autoComplete="off"
           required
         />
         <button type="submit" disabled={loading}>

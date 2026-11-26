@@ -17,18 +17,18 @@ export async function registerAccount(displayName, accountKey) {
   return response.json();
 }
 
-export async function login(userId, accountKey) {
+export async function login(displayName, accountKey) {
   const response = await fetch(`${API_URL}/accounts/login`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      user_id: userId,
+      display_name: displayName,
       account_key: accountKey,
     }),
   });
 
   if (response.status === 401 || response.status === 422) {
-    throw new Error("Invalid user ID or account key.");
+    throw new Error("Invalid display name or account key.");
   }
 
   if (!response.ok) {

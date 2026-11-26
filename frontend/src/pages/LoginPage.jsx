@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { login } from "../services/accounts.js";
 import { getDevice } from "../services/deviceStorage.js";
 import {
@@ -9,47 +9,19 @@ import {
 } from "../services/devices.js";
 import "../styles/registration.css";
 
-const USER_ID_PATTERN = /^[0-9a-f]{32}$/;
-
 export default function LoginPage({ onLogin }) {
-  const [userId, setUserId] = useState("");
+  const [displayName, setDisplayName] = useState("");
   const [accountKey, setAccountKey] = useState("");
   const [deviceName, setDeviceName] = useState("");
   const [showKey, setShowKey] = useState(false);
-  const [knownDevice, setKnownDevice] = useState(null);
   const [pendingLogin, setPendingLogin] = useState(null);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
 
-  const trimmedUserId = userId.trim();
-  const userIdLooksValid = USER_ID_PATTERN.test(trimmedUserId);
-
-  // Check whether this browser already holds a device key for the entered ID.
-  useEffect(() => {
-    if (!userIdLooksValid) {
-      setKnownDevice(null);
-      return;
-    }
-
-    let cancelled = false;
-
-    getDevice(trimmedUserId)
-      .then((device) => {
-        if (!cancelled) setKnownDevice(device);
-      })
-      .catch(() => {
-        if (!cancelled) setKnownDevice(null);
-      });
-
-    return () => {
-      cancelled = true;
-    };
-  }, [trimmedUserId, userIdLooksValid]);
-
   function describeError(error) {
     if (error instanceof DeviceApiError) return error.message;
     if (error instanceof TypeError) {
-      return "Could not reach the backend. Is starter.js running?";
+      return "Could not reach the backend. Is LockTalk running?";
     }
     return error?.message || "Could not log in. Please try again.";
   }
@@ -70,16 +42,15 @@ export default function LoginPage({ onLogin }) {
       return;
     }
 
-    const id = trimmedUserId;
-    const name = deviceName.trim();
-
     setBusy(true);
     setMessage("");
 
     try {
-      const account = await login(id, accountKey.trim());
+      const account = await login(displayName.trim(), accountKey.trim());
       setAccountKey("");
 
+      // The backend returns the public ID after checking the credentials.
+      const id = account.user_id;
       const ticket = account.login_ticket;
       const device = await getDevice(id);
 
@@ -99,11 +70,6 @@ export default function LoginPage({ onLogin }) {
           }
           throw error;
         }
-      }
-
-      if (name) {
-        await finishAsNewDevice(ticket, id, name);
-        return;
       }
 
       setPendingLogin({ ticket, userId: id });
@@ -197,14 +163,15 @@ export default function LoginPage({ onLogin }) {
       <div className="welcome-card">
         <span className="badge">Unaudited local prototype</span>
         <h2>Login</h2>
-        <p>Enter your public user ID and account key.</p>
+        <p>Enter your display name and account key.</p>
 
         <form className="registration-form" onSubmit={handleSubmit}>
-          <label htmlFor="login-user-id">Public user ID</label>
+          <label htmlFor="login-display-name">Display name</label>
           <input
-            id="login-user-id"
-            value={userId}
-            onChange={(event) => setUserId(event.target.value)}
+            id="login-display-name"
+            value={displayName}
+            onChange={(event) => setDisplayName(event.target.value)}
+            maxLength={100}
             autoComplete="off"
             required
           />
@@ -229,32 +196,6 @@ export default function LoginPage({ onLogin }) {
               {showKey ? "Hide" : "Reveal"}
             </button>
           </div>
-
-          <button type="button" onClick={() => setShowKey(!showKey)}>
-            {showKey ? "Hide key" : "Reveal key"}
-          </button>
-
-          {userIdLooksValid && knownDevice && (
-            <p className="device-hint">
-              This browser holds a device key for this account:{" "}
-              <strong>{knownDevice.deviceName}</strong>
-            </p>
-          )}
-
-          {userIdLooksValid && !knownDevice && (
-            <>
-              <label htmlFor="login-device-name">
-                Device name (new device in this browser)
-              </label>
-              <input
-                id="login-device-name"
-                value={deviceName}
-                onChange={(event) => setDeviceName(event.target.value)}
-                maxLength={100}
-                autoComplete="off"
-              />
-            </>
-          )}
 
           <button type="submit" disabled={busy}>
             {busy ? "Logging in..." : "Login"}
