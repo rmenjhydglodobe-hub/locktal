@@ -10,11 +10,15 @@ export async function registerAccount(displayName, accountKey) {
     }),
   });
 
+  const data = await response.json().catch(() => ({}));
+
   if (!response.ok) {
-    throw new Error("Registration failed.");
+    throw new Error(
+      typeof data.detail === "string" ? data.detail : "Registration failed.",
+    );
   }
 
-  return response.json();
+  return data;
 }
 
 export async function login(displayName, accountKey) {
