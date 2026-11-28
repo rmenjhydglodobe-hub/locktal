@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
+import { LoaderCircle, ShieldOff, UserX } from "lucide-react";
 import {
   listBlockedUsers,
   unblockUser,
 } from "../services/messageRequests.js";
+import Icon from "./Icon.jsx";
 
 export default function BlockedUsers({
   sessionToken,
@@ -68,28 +70,35 @@ export default function BlockedUsers({
 
   return (
     <section className="blocked-users">
-      <h3>Blocked users</h3>
+      <div className="section-header">
+        <span className="section-icon"><Icon icon={ShieldOff} size={18} /></span>
+        <h3>Blocked users</h3>
+      </div>
 
-      {loading && <p>Loading blocked users...</p>}
-      {message && <p role="alert">{message}</p>}
+      {loading && <p><Icon icon={LoaderCircle} size={15} className="spin" /> Loading blocked users...</p>}
+      {message && <p className="registration-notice" role="alert">{message}</p>}
 
       {!loading && !message && users.length === 0 && (
-        <p>You haven’t blocked anyone.</p>
+        <div className="empty-state">
+          <div className="empty-state-icon"><Icon icon={UserX} size={24} /></div>
+          <p>No blocked users.</p>
+        </div>
       )}
 
       {!loading &&
         users.map((user) => (
           <div className="user-result" key={user.user_id}>
             <strong>{user.display_name}</strong>
-            <span>Public ID: {user.user_id}</span>
+            <span style={{ fontFamily: "ui-monospace, Consolas, monospace", fontSize: "0.8rem" }}>{user.user_id}</span>
 
-            <div className="registration-form">
+            <div className="button-row">
               <button
                 type="button"
+                className="secondary"
                 disabled={Boolean(workingId)}
                 onClick={() => handleUnblock(user)}
               >
-                {workingId === user.user_id ? "Unblocking..." : "Unblock"}
+                {workingId === user.user_id ? <><Icon icon={LoaderCircle} size={15} className="spin" /> Unblocking...</> : "Unblock"}
               </button>
             </div>
           </div>

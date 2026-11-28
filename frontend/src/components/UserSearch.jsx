@@ -1,7 +1,9 @@
 import { useState } from "react";
+import { LoaderCircle, Search, Send, UserSearch as UserSearchIcon } from "lucide-react";
 import { searchUsers } from "../services/users.js";
 import { sendMessageRequest } from "../services/messageRequests.js";
 import BlockButton from "./BlockButton.jsx";
+import Icon from "./Icon.jsx";
 
 const USER_ID_PATTERN = /^[0-9a-f]{32}$/;
 
@@ -67,8 +69,11 @@ export default function UserSearch({ sessionToken, onRequestChanged }) {
 
   return (
     <section className="user-search">
-      <h3>Find users</h3>
-      <p>Search using the full public user ID.</p>
+      <div className="section-header">
+        <span className="section-icon"><Icon icon={UserSearchIcon} size={18} /></span>
+        <h3>Find users</h3>
+      </div>
+      <p className="user-search-note">Search using the full 32-character public user ID.</p>
 
       <form className="registration-form" onSubmit={handleSearch}>
         <label htmlFor="user-search-query">Public user ID</label>
@@ -78,30 +83,31 @@ export default function UserSearch({ sessionToken, onRequestChanged }) {
           onChange={(event) => setQuery(event.target.value)}
           maxLength={32}
           autoComplete="off"
+          placeholder="e.g. a1b2c3..."
           required
         />
         <button type="submit" disabled={loading}>
-          {loading ? "Searching..." : "Search"}
+          {loading ? <><Icon icon={LoaderCircle} size={16} className="spin" /> Searching...</> : <><Icon icon={Search} size={16} /> Search</>}
         </button>
       </form>
 
-      {message && <p role="status">{message}</p>}
+      {message && <p className="registration-notice" role="status">{message}</p>}
 
       {searched && !loading && users.length === 0 && (
-        <p>No users found.</p>
+        <p className="device-hint">No users found.</p>
       )}
 
       {users.map((user) => (
         <div className="user-result" key={user.user_id}>
           <strong>{user.display_name}</strong>
-          <span>Public ID: {user.user_id}</span>
-          <div className="registration-form">
+          <span className="ws-id" style={{ fontFamily: "ui-monospace, Consolas, monospace", fontSize: "0.8rem" }}>{user.user_id}</span>
+          <div className="button-row">
             <button
               type="button"
               disabled={Boolean(sendingId)}
               onClick={() => handleSend(user)}
             >
-              {sendingId === user.user_id ? "Sending..." : "Send request"}
+              {sendingId === user.user_id ? <><Icon icon={LoaderCircle} size={15} className="spin" /> Sending...</> : <><Icon icon={Send} size={15} /> Send request</>}
             </button>
           </div>
 

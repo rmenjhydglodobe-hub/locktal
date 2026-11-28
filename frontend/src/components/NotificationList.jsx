@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
+import { Bell, Check, Inbox, LoaderCircle } from "lucide-react";
 import {
   listNotifications,
   markNotificationRead,
 } from "../services/notifications.js";
+import Icon from "./Icon.jsx";
 
 export default function NotificationList({ sessionToken }) {
   const [notifications, setNotifications] = useState([]);
@@ -56,20 +58,24 @@ export default function NotificationList({ sessionToken }) {
 
   return (
     <section className="notification-list">
-      <h3>Notifications</h3>
+      <div className="section-header">
+        <span className="section-icon"><Icon icon={Bell} size={18} /></span>
+        <h3>Notifications</h3>
+      </div>
 
-      {loading && <p>Loading notifications...</p>}
-      {error && <p role="alert">{error}</p>}
+      {loading && <p><Icon icon={LoaderCircle} size={15} className="spin" /> Loading notifications...</p>}
+      {error && <p className="registration-notice" role="alert">{error}</p>}
 
       {!loading && !error && notifications.length === 0 && (
-        <p>No notifications yet.</p>
+        <div className="empty-state">
+          <div className="empty-state-icon"><Icon icon={Inbox} size={24} /></div>
+          <p>No notifications yet.</p>
+        </div>
       )}
 
       {notifications.map((notification) => (
         <div
-          className={
-            "notification-card" + (notification.read_at ? " read" : "")
-          }
+          className={"notification-card" + (notification.read_at ? " read" : "")}
           key={notification.notification_id}
         >
           <span>{notification.message}</span>
@@ -78,12 +84,11 @@ export default function NotificationList({ sessionToken }) {
           {!notification.read_at && (
             <button
               type="button"
+              className="secondary"
               disabled={markingId === notification.notification_id}
               onClick={() => handleMarkRead(notification)}
             >
-              {markingId === notification.notification_id
-                ? "Updating..."
-                : "Mark as read"}
+              {markingId === notification.notification_id ? <><Icon icon={LoaderCircle} size={14} className="spin" /> Updating...</> : <><Icon icon={Check} size={14} /> Mark as read</>}
             </button>
           )}
         </div>

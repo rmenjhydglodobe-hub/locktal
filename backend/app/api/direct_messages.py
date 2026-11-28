@@ -19,13 +19,15 @@ class SendMessageRequest(BaseModel):
 
 
 def validate_pair(user_id: str, other_user_id: str):
+    other_user_id = (other_user_id or "").strip().lower()
+    user_id = (user_id or "").strip().lower()
     if (
         not re.fullmatch(r"[0-9a-f]{32}", other_user_id)
         or other_user_id == user_id
     ):
         raise HTTPException(status_code=400, detail="Invalid contact.")
 
-    return sorted((user_id, other_user_id))
+    return other_user_id, sorted((user_id, other_user_id))
 
 
 def lock_and_check_relationship(cursor, user_id, other_user_id, low, high):
@@ -80,6 +82,72 @@ def lock_and_check_relationship(cursor, user_id, other_user_id, low, high):
         )
 
 
+@router.get("/history")
+def list_chat_history(authorization: str | None = Header(default=None)):
+    session = get_session(authorization)
+    user_id = session["user_id"]
+
+    try:
+        connection = get_connection()
+        try:
+            with connection.cursor() as cursor:
+                cursor.execute(
+                    """
+                    SELECT
+                        a.user_id,
+                        a.display_name,
+                        m.body,
+                        m.created_at,
+                        m.sender_user_id,
+                        (
+                            SELECT COUNT(*)
+                            FROM direct_messages unread
+                            WHERE unread.sender_user_id = a.user_id
+                              AND unread.recipient_user_id = %s
+                              AND unread.recipient_seen_at IS NULL
+                        ) AS unread_count
+                    FROM (
+                        SELECT
+                            CASE
+                                WHEN sender_user_id = %s THEN recipient_user_id
+                                ELSE sender_user_id
+                            END AS contact_user_id,
+                            MAX(message_id) AS last_message_id
+                        FROM direct_messages
+                        WHERE sender_user_id = %s OR recipient_user_id = %s
+                        GROUP BY contact_user_id
+                    ) latest
+                    JOIN direct_messages m ON m.message_id = latest.last_message_id
+                    JOIN accounts a ON a.user_id = latest.contact_user_id
+                    ORDER BY m.message_id DESC
+                    LIMIT 50
+                    """,
+                    (user_id, user_id, user_id, user_id),
+                )
+                rows = cursor.fetchall()
+        finally:
+            connection.close()
+    except (pymysql.MySQLError, OSError, KeyError, ValueError):
+        raise HTTPException(
+            status_code=503,
+            detail="Could not load chat history.",
+        ) from None
+
+    return {
+        "history": [
+            {
+                "user_id": row[0],
+                "display_name": row[1],
+                "last_message": row[2],
+                "last_message_at": row[3].isoformat() if row[3] else None,
+                "last_message_from_me": row[4] == user_id,
+                "unread_count": row[5],
+            }
+            for row in rows
+        ]
+    }
+
+
 @router.post("")
 def send_message(
     request: SendMessageRequest,
@@ -87,8 +155,7 @@ def send_message(
 ):
     session = get_session(authorization)
     sender = session["user_id"]
-    recipient = request.recipient_user_id
-    low, high = validate_pair(sender, recipient)
+    recipient, (low, high) = validate_pair(sender, request.recipient_user_id)
 
     body = request.body.strip()
     if not body:
@@ -160,7 +227,7 @@ def list_messages(
 ):
     session = get_session(authorization)
     user_id = session["user_id"]
-    low, high = validate_pair(user_id, contact_user_id)
+    contact_user_id, (low, high) = validate_pair(user_id, contact_user_id)
     if before_id is not None and not (1 <= before_id <= 18446744073709551615):
         raise HTTPException(status_code=400, detail="Invalid message ID.")
 
@@ -261,7 +328,7 @@ def acknowledge_delivery(
 ):
     session = get_session(authorization)
     recipient = session["user_id"]
-    low, high = validate_pair(recipient, contact_user_id)
+    contact_user_id, (low, high) = validate_pair(recipient, contact_user_id)
 
     if any(message_id <= 0 for message_id in request.message_ids):
         raise HTTPException(status_code=400, detail="Invalid message ID.")
@@ -323,7 +390,7 @@ def mark_messages_seen(
 ):
     session = get_session(authorization)
     recipient = session["user_id"]
-    low, high = validate_pair(recipient, contact_user_id)
+    contact_user_id, (low, high) = validate_pair(recipient, contact_user_id)
 
     if any(message_id <= 0 for message_id in request.message_ids):
         raise HTTPException(status_code=400, detail="Invalid message ID.")

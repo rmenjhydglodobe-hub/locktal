@@ -10,6 +10,7 @@ from app.api.notifications import router as notifications_router
 from app.api.users import router as users_router
 from app.api.message_requests import router as message_requests_router
 from app.api.direct_messages import router as direct_messages_router
+from app.api.groups import router as groups_router
 
 app = FastAPI(title="LockTalk Prototype")
 
@@ -41,6 +42,7 @@ app.include_router(notifications_router)
 app.include_router(users_router)
 app.include_router(message_requests_router)
 app.include_router(direct_messages_router)
+app.include_router(groups_router)
 
 @app.get("/health")
 def health():

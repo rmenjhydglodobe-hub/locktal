@@ -1,11 +1,24 @@
+import {
+  Bell,
+  Lock,
+  LogOut,
+  MessageSquare,
+  Moon,
+  Settings,
+  Sun,
+  Users,
+  UsersRound,
+} from "lucide-react";
+import Icon from "./Icon.jsx";
+
 const workspaceItems = [
-  { id: "chats", label: "Chats" },
-  { id: "contacts", label: "Contacts" },
-  { id: "groups", label: "Groups" },
-  { id: "notifications", label: "Notifications" },
+  { id: "chats", label: "Chats", icon: MessageSquare },
+  { id: "contacts", label: "Contacts", icon: Users },
+  { id: "groups", label: "Groups", icon: UsersRound },
+  { id: "notifications", label: "Notifications", icon: Bell },
 ];
 
-const systemItems = [{ id: "settings", label: "Settings" }];
+const systemItems = [{ id: "settings", label: "Settings", icon: Settings }];
 
 export default function Sidebar({
   section,
@@ -22,6 +35,7 @@ export default function Sidebar({
     account.user_id.slice(0, 8) + "…" + account.user_id.slice(-4);
 
   function renderItem(item) {
+    const ItemIcon = item.icon;
     return (
       <button
         key={item.id}
@@ -30,7 +44,8 @@ export default function Sidebar({
         aria-current={section === item.id ? "page" : undefined}
         onClick={() => onSelect(item.id)}
       >
-        {item.label}
+        <Icon icon={ItemIcon} size={18} className="nav-icon" />
+        <span>{item.label}</span>
       </button>
     );
   }
@@ -38,8 +53,8 @@ export default function Sidebar({
   return (
     <aside className="ws-sidebar">
       <div className="ws-brand">
-        <span className="ws-brand-icon" aria-hidden="true">
-          🔒
+        <span className="ws-brand-icon">
+          <Icon icon={Lock} size={20} />
         </span>
         <strong>
           Lock<span>Talk</span>
@@ -56,21 +71,27 @@ export default function Sidebar({
 
       <div className="ws-sidebar-footer">
         <div className="ws-theme">
-          <span>Theme</span>
+          <span className="ws-theme-label">
+            <Icon icon={theme === "dark" ? Moon : Sun} size={15} /> Theme
+          </span>
           <div className="ws-theme-buttons">
             <button
               type="button"
               className={theme === "light" ? "active" : ""}
               onClick={() => onThemeChange("light")}
+              aria-label="Light theme"
+              aria-pressed={theme === "light"}
             >
-              Light
+              <Icon icon={Sun} size={14} />
             </button>
             <button
               type="button"
               className={theme === "dark" ? "active" : ""}
               onClick={() => onThemeChange("dark")}
+              aria-label="Dark theme"
+              aria-pressed={theme === "dark"}
             >
-              Dark
+              <Icon icon={Moon} size={14} />
             </button>
           </div>
         </div>
@@ -88,8 +109,10 @@ export default function Sidebar({
             className="ws-logout"
             onClick={onLogout}
             disabled={logoutBusy}
+            aria-label={logoutBusy ? "Logging out" : "Log out"}
+            title="Log out"
           >
-            {logoutBusy ? "..." : "Log out"}
+            <Icon icon={LogOut} size={17} />
           </button>
         </div>
       </div>

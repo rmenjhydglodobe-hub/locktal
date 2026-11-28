@@ -1,5 +1,7 @@
 import { useState } from "react";
+import { AlertTriangle, CheckCircle2, Copy, Eye, EyeOff, KeyRound, LoaderCircle, UserPlus } from "lucide-react";
 import { registerAccount } from "../services/accounts.js";
+import Icon from "../components/Icon.jsx";
 import "../styles/registration.css";
 
 function generateAccountKey() {
@@ -94,11 +96,11 @@ export default function HomePage() {
   return (
     <main className="content">
       <div className="welcome-card">
-        <span className="badge">Unaudited local prototype</span>
-        <h2>Welcome to LockTalk</h2>
+        <span className="badge"><Icon icon={UserPlus} size={14} /> Create account</span>
+        <h2>Get started</h2>
         <p>
-          Create a test account. Messages are stored as plaintext and are not
-          end-to-end encrypted. Do not use sensitive information.
+          Create a local test account. Messages are stored as plaintext and are not
+          end-to-end encrypted yet.
         </p>
 
         {!accountKey && !account && (
@@ -109,9 +111,10 @@ export default function HomePage() {
               value={displayName}
               onChange={(event) => setDisplayName(event.target.value)}
               maxLength={100}
+              placeholder="How others will see you"
               required
             />
-            <button type="submit">Generate account key</button>
+            <button type="submit"><Icon icon={KeyRound} size={16} /> Generate account key</button>
           </form>
         )}
 
@@ -119,8 +122,8 @@ export default function HomePage() {
           <section className="registration-form">
             <h3>Save your account key</h3>
             <p className="warning">
-              This key cannot be recovered. Anyone who has it may access your
-              account. Save it before continuing.
+              <Icon icon={AlertTriangle} size={15} style={{ verticalAlign: "text-bottom", marginRight: 4 }} />
+              This key cannot be recovered. Anyone who has it may access your account.
             </p>
 
             <label htmlFor="account-key">Account key</label>
@@ -133,11 +136,11 @@ export default function HomePage() {
             />
 
             <div className="button-row">
-              <button type="button" onClick={() => setShowKey(!showKey)}>
-                {showKey ? "Hide key" : "Reveal key"}
+              <button type="button" className="secondary" onClick={() => setShowKey(!showKey)}>
+                <Icon icon={showKey ? EyeOff : Eye} size={16} /> {showKey ? "Hide key" : "Reveal key"}
               </button>
-              <button type="button" onClick={copyKey}>
-                Copy key
+              <button type="button" className="secondary" onClick={copyKey}>
+                <Icon icon={Copy} size={16} /> Copy key
               </button>
             </div>
 
@@ -147,7 +150,7 @@ export default function HomePage() {
                 checked={confirmed}
                 onChange={(event) => setConfirmed(event.target.checked)}
               />
-              I have saved my account key.
+              I have saved my account key somewhere safe.
             </label>
 
             <button
@@ -155,26 +158,25 @@ export default function HomePage() {
               onClick={createAccount}
               disabled={!confirmed || busy}
             >
-              {busy ? "Creating account..." : "Create account"}
+              {busy ? <><Icon icon={LoaderCircle} size={16} className="spin" /> Creating account...</> : <><Icon icon={UserPlus} size={16} /> Create account</>}
             </button>
           </section>
         )}
 
         {account && (
           <section className="registration-form">
-            <h3>Account created</h3>
+            <h3><Icon icon={CheckCircle2} size={18} style={{ verticalAlign: "text-bottom", color: "var(--color-accent, #16a34a)" }} /> Account created</h3>
             <p>
-              Save this public user ID too. Other users need it to find you.
-              Use your display name and account key to log in.
+              Save this public user ID. Other users need it to find you. Use your
+              display name and account key to log in.
             </p>
             <label htmlFor="user-id">Public user ID</label>
             <input id="user-id" value={account.user_id} readOnly />
-            <button type="button" onClick={copyUserId}>
-                Copy public user ID
+            <button type="button" className="secondary" onClick={copyUserId}>
+              <Icon icon={Copy} size={16} /> Copy public user ID
             </button>
             <p className="warning">
-              Closing this screen removes the key from view. LockTalk cannot
-              recover it.
+              Closing this screen removes the key from view. LockTalk cannot recover it.
             </p>
             <button type="button" onClick={startOver}>
               Done

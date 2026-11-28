@@ -1,5 +1,7 @@
 import { useState } from "react";
+import { LoaderCircle, ShieldBan } from "lucide-react";
 import { blockUser } from "../services/messageRequests.js";
+import Icon from "./Icon.jsx";
 
 export default function BlockButton({
   sessionToken,
@@ -36,12 +38,11 @@ export default function BlockButton({
   }
 
   return (
-    <div className="registration-form">
-      <button type="button" onClick={handleBlock} disabled={busy}>
-        {busy ? "Blocking..." : "Block"}
+    <div className="button-row">
+      <button type="button" className="secondary" onClick={handleBlock} disabled={busy}>
+        {busy ? <><Icon icon={LoaderCircle} size={15} className="spin" /> Blocking...</> : <><Icon icon={ShieldBan} size={15} /> Block</>}
       </button>
-
-      {message && <p role="status">{message}</p>}
+      {message && <p className="registration-notice" role="status" style={{ width: "100%" }}>{message}</p>}
     </div>
   );
 }

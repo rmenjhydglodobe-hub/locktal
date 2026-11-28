@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { LoaderCircle, RefreshCw } from "lucide-react";
 
 import AuthLayout from "./components/AuthLayout.jsx";
 import HomePage from "./pages/HomePage.jsx";
@@ -132,15 +133,17 @@ export default function App() {
       <div className="page-area">
         {checking ? (
           <main className="content">
-            <p>Checking session...</p>
+            <div className="welcome-card" style={{ textAlign: "center", display: "grid", gap: 12, justifyItems: "center" }}>
+              <div className="empty-state-icon"><LoaderCircle size={28} className="spin" aria-hidden="true" /></div>
+              <p>Checking session...</p>
+            </div>
           </main>
         ) : checkError ? (
           <main className="content">
             <div className="welcome-card registration-form">
-              <p role="alert">{checkError}</p>
-
+              <p className="registration-notice" role="alert">{checkError}</p>
               <button type="button" onClick={checkSession}>
-                Retry
+                <RefreshCw size={16} aria-hidden="true" /> Retry
               </button>
             </div>
           </main>

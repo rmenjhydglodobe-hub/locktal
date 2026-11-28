@@ -12,9 +12,13 @@ async function readResponse(response) {
   return data;
 }
 
+function normalizeId(value) {
+  return String(value || "").trim().toLowerCase();
+}
+
 export async function listMessages(token, contactId) {
   const response = await fetch(
-    `${API_URL}/direct-messages/${encodeURIComponent(contactId)}`,
+    `${API_URL}/direct-messages/${encodeURIComponent(normalizeId(contactId))}`,
     {
       headers: { Authorization: `Bearer ${token}` },
     },
@@ -31,7 +35,7 @@ export async function sendMessage(token, recipientId, body) {
       Authorization: `Bearer ${token}`,
     },
     body: JSON.stringify({
-      recipient_user_id: recipientId,
+      recipient_user_id: normalizeId(recipientId),
       body,
     }),
   });
@@ -41,7 +45,7 @@ export async function sendMessage(token, recipientId, body) {
 
 export async function acknowledgeDelivery(token, contactId, messageIds) {
   const response = await fetch(
-    `${API_URL}/direct-messages/${encodeURIComponent(contactId)}/delivered`,
+    `${API_URL}/direct-messages/${encodeURIComponent(normalizeId(contactId))}/delivered`,
     {
       method: "POST",
       headers: {
@@ -57,7 +61,7 @@ export async function acknowledgeDelivery(token, contactId, messageIds) {
 
 export async function markMessagesSeen(token, contactId, messageIds) {
   const response = await fetch(
-    `${API_URL}/direct-messages/${encodeURIComponent(contactId)}/seen`,
+    `${API_URL}/direct-messages/${encodeURIComponent(normalizeId(contactId))}/seen`,
     {
       method: "POST",
       headers: {
@@ -67,6 +71,14 @@ export async function markMessagesSeen(token, contactId, messageIds) {
       body: JSON.stringify({ message_ids: messageIds }),
     },
   );
+
+  return readResponse(response);
+}
+
+export async function listChatHistory(token) {
+  const response = await fetch(`${API_URL}/direct-messages/history`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
 
   return readResponse(response);
 }

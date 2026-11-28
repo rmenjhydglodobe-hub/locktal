@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
+import { Check, Inbox, LoaderCircle, Mail, X } from "lucide-react";
 import BlockButton from "./BlockButton.jsx";
+import Icon from "./Icon.jsx";
 
 import {
   listIncomingRequests,
@@ -79,33 +81,42 @@ export default function IncomingRequests({
 
   return (
     <section className="incoming-requests">
-      <h3>Message requests</h3>
+      <div className="section-header">
+        <span className="section-icon"><Icon icon={Mail} size={18} /></span>
+        <h3>Message requests</h3>
+      </div>
 
-      {loading && <p>Loading requests...</p>}
-      {message && <p role="status">{message}</p>}
+      {loading && <p><Icon icon={LoaderCircle} size={15} className="spin" /> Loading requests...</p>}
+      {message && <p className="registration-notice" role="status">{message}</p>}
 
-      {!loading && requests.length === 0 && <p>No incoming requests.</p>}
+      {!loading && requests.length === 0 && (
+        <div className="empty-state">
+          <div className="empty-state-icon"><Icon icon={Inbox} size={24} /></div>
+          <p>No incoming requests.</p>
+        </div>
+      )}
 
       {requests.map((request) => (
         <div className="user-result" key={request.request_id}>
           <strong>{request.sender_display_name}</strong>
-          <span>Public ID: {request.sender_user_id}</span>
-          <span>Received: {request.created_at || "Unknown time"}</span>
+          <span style={{ fontFamily: "ui-monospace, Consolas, monospace", fontSize: "0.8rem" }}>{request.sender_user_id}</span>
+          <small>Received: {request.created_at || "Unknown time"}</small>
 
-          <div className="registration-form button-row">
+          <div className="button-row">
             <button
               type="button"
               disabled={Boolean(workingId)}
               onClick={() => handleResponse(request, "accept")}
             >
-              Accept
+              {workingId === request.request_id ? <Icon icon={LoaderCircle} size={15} className="spin" /> : <Icon icon={Check} size={15} />} Accept
             </button>
             <button
               type="button"
+              className="secondary"
               disabled={Boolean(workingId)}
               onClick={() => handleResponse(request, "decline")}
             >
-              Decline
+              <Icon icon={X} size={15} /> Decline
             </button>
           </div>
 

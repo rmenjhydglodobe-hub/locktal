@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Eye, EyeOff, KeyRound, LoaderCircle, LogIn, MonitorSmartphone } from "lucide-react";
 import { login } from "../services/accounts.js";
 import { getDevice } from "../services/deviceStorage.js";
 import {
@@ -7,6 +8,7 @@ import {
   loginReturningDevice,
   registerNewDevice,
 } from "../services/devices.js";
+import Icon from "../components/Icon.jsx";
 import "../styles/registration.css";
 
 export default function LoginPage({ onLogin }) {
@@ -117,11 +119,11 @@ export default function LoginPage({ onLogin }) {
     return (
       <main className="content">
         <div className="welcome-card">
-          <span className="badge">Unaudited local prototype</span>
+          <span className="badge"><Icon icon={MonitorSmartphone} size={14} /> Device setup</span>
           <h2>Name this device</h2>
           <p>
-            LockTalk registers each browser or device separately. Choose a name
-            you will recognize in your device list, such as “My laptop”.
+            LockTalk registers each browser separately. Choose a name you’ll recognize,
+            like “My laptop”.
           </p>
 
           <form className="registration-form" onSubmit={handleRegisterDevice}>
@@ -135,14 +137,15 @@ export default function LoginPage({ onLogin }) {
               onChange={(event) => setDeviceName(event.target.value)}
               maxLength={100}
               autoComplete="off"
+              placeholder="e.g. My laptop"
               required
             />
 
             <div className="button-row">
               <button type="submit" disabled={busy}>
-                {busy ? "Registering..." : "Register this device"}
+                {busy ? <><Icon icon={LoaderCircle} size={16} className="spin" /> Registering...</> : <><Icon icon={MonitorSmartphone} size={16} /> Register device</>}
               </button>
-              <button type="button" onClick={cancelPending} disabled={busy}>
+              <button type="button" className="secondary" onClick={cancelPending} disabled={busy}>
                 Cancel
               </button>
             </div>
@@ -161,9 +164,9 @@ export default function LoginPage({ onLogin }) {
   return (
     <main className="content">
       <div className="welcome-card">
-        <span className="badge">Unaudited local prototype</span>
-        <h2>Login</h2>
-        <p>Enter your display name or public user ID, and your account key.</p>
+        <span className="badge"><Icon icon={KeyRound} size={14} /> Secure sign-in</span>
+        <h2>Welcome back</h2>
+        <p>Sign in with your display name or public user ID and your account key.</p>
 
         <form className="registration-form" onSubmit={handleSubmit}>
           <label htmlFor="login-display-name">Display name or public user ID</label>
@@ -173,6 +176,7 @@ export default function LoginPage({ onLogin }) {
             onChange={(event) => setDisplayName(event.target.value)}
             maxLength={100}
             autoComplete="off"
+            placeholder="Your name or 32-character ID"
             required
           />
 
@@ -184,6 +188,7 @@ export default function LoginPage({ onLogin }) {
               value={accountKey}
               onChange={(event) => setAccountKey(event.target.value)}
               autoComplete="off"
+              placeholder="Enter your account key"
               required
             />
 
@@ -192,13 +197,15 @@ export default function LoginPage({ onLogin }) {
               className="login-key-toggle"
               onClick={() => setShowKey((current) => !current)}
               aria-pressed={showKey}
+              aria-label={showKey ? "Hide account key" : "Reveal account key"}
             >
+              <Icon icon={showKey ? EyeOff : Eye} size={16} />
               {showKey ? "Hide" : "Reveal"}
             </button>
           </div>
 
           <button type="submit" disabled={busy}>
-            {busy ? "Logging in..." : "Login"}
+            {busy ? <><Icon icon={LoaderCircle} size={16} className="spin" /> Logging in...</> : <><Icon icon={LogIn} size={16} /> Login</>}
           </button>
         </form>
 

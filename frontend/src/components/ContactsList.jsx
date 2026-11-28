@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
+import { LoaderCircle, MessageSquare, RefreshCw, UserRound, Users } from "lucide-react";
 import { listContacts } from "../services/messageRequests.js";
 import BlockButton from "./BlockButton.jsx";
+import Icon from "./Icon.jsx";
 
 const CONTACTS_REFRESH_MS = 10000;
 
@@ -59,23 +61,30 @@ export default function ContactsList({
 
   return (
     <section className="contacts-list">
-      <h3>Your contacts</h3>
+      <div className="section-header">
+        <span className="section-icon"><Icon icon={Users} size={18} /></span>
+        <h3>Your contacts</h3>
+      </div>
 
-      <div className="registration-form">
+      <div className="button-row" style={{ marginBottom: 4 }}>
         <button
           type="button"
+          className="secondary"
           disabled={loading}
           onClick={() => setReloadKey((current) => current + 1)}
         >
-          Refresh contacts
+          <Icon icon={loading ? LoaderCircle : RefreshCw} size={15} className={loading ? "spin" : ""} /> Refresh
         </button>
       </div>
 
-      {loading && <p>Loading contacts...</p>}
-      {error && <p role="alert">{error}</p>}
+      {loading && <p><Icon icon={LoaderCircle} size={15} className="spin" /> Loading contacts...</p>}
+      {error && <p className="registration-notice" role="alert">{error}</p>}
 
       {!loading && !error && contacts.length === 0 && (
-        <p>No accepted contacts yet.</p>
+        <div className="empty-state">
+          <div className="empty-state-icon"><Icon icon={UserRound} size={24} /></div>
+          <p>No accepted contacts yet.</p>
+        </div>
       )}
 
       {!loading &&
@@ -88,15 +97,13 @@ export default function ContactsList({
               <div className="contact-header">
                 <strong>{contact.display_name}</strong>
                 {unread > 0 && (
-                  <span className="unread-badge">
-                    {unread} unread
-                  </span>
+                  <span className="unread-badge">{unread} unread</span>
                 )}
               </div>
-              <span>Public ID: {contact.user_id}</span>
-              <div className="registration-form">
+              <span style={{ fontFamily: "ui-monospace, Consolas, monospace", fontSize: "0.8rem" }}>{contact.user_id}</span>
+              <div className="button-row">
                 <button type="button" onClick={() => onOpenChat(contact)}>
-                  Open chat
+                  <Icon icon={MessageSquare} size={15} /> Open chat
                 </button>
               </div>
 

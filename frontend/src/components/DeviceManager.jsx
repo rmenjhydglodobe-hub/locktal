@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
+import { AlertTriangle, LoaderCircle, MonitorSmartphone, Pencil, ShieldOff } from "lucide-react";
 import {
   listDevices,
   renameDevice,
   revokeDevice,
 } from "../services/devices.js";
+import Icon from "./Icon.jsx";
 import "../styles/registration.css";
 
 export default function DeviceManager({ sessionToken, onCurrentDeviceRevoked }) {
@@ -110,10 +112,13 @@ export default function DeviceManager({ sessionToken, onCurrentDeviceRevoked }) 
 
   return (
     <section className="device-list">
-      <h3>Your devices</h3>
+      <div className="section-header">
+        <span className="section-icon"><Icon icon={MonitorSmartphone} size={18} /></span>
+        <h3>Your devices</h3>
+      </div>
 
-      {loading && <p>Loading devices...</p>}
-      {deviceError && <p role="alert">{deviceError}</p>}
+      {loading && <p><Icon icon={LoaderCircle} size={15} className="spin" /> Loading devices...</p>}
+      {deviceError && <p className="registration-notice" role="alert">{deviceError}</p>}
 
       {!loading && !deviceError && devices.length === 0 && (
         <p>No devices found.</p>
@@ -125,9 +130,13 @@ export default function DeviceManager({ sessionToken, onCurrentDeviceRevoked }) 
             {device.device_name}
             {device.is_current ? " (this device)" : ""}
           </strong>
-          <span>Status: {device.revoked_at ? "Revoked" : "Active"}</span>
-          <span>Added: {device.created_at || "Unknown"}</span>
-          <span>Last activity: {device.last_activity_at || "Unknown"}</span>
+          <div className="device-meta">
+            <span className={`status-pill ${device.revoked_at ? "revoked" : "active"}`}>
+              {device.revoked_at ? "Revoked" : "Active"}
+            </span>
+            <span>Added: {device.created_at || "Unknown"}</span>
+            <span>Last activity: {device.last_activity_at || "Unknown"}</span>
+          </div>
 
           {editingId === device.device_id ? (
             <form className="registration-form" onSubmit={handleRename}>
@@ -141,69 +150,51 @@ export default function DeviceManager({ sessionToken, onCurrentDeviceRevoked }) 
               />
               <div className="button-row">
                 <button type="submit" disabled={saving || !newName.trim()}>
-                  {saving ? "Saving..." : "Save"}
+                  {saving ? <><Icon icon={LoaderCircle} size={15} className="spin" /> Saving...</> : "Save"}
                 </button>
-                <button
-                  type="button"
-                  disabled={saving}
-                  onClick={() => setEditingId(null)}
-                >
+                <button type="button" className="secondary" disabled={saving} onClick={() => setEditingId(null)}>
                   Cancel
                 </button>
               </div>
             </form>
           ) : (
             !device.revoked_at && (
-              <div className="registration-form">
-                <button
-                  type="button"
-                  disabled={saving || revoking}
-                  onClick={() => startRename(device)}
-                >
-                  Rename
+              <div className="button-row">
+                <button type="button" className="secondary" disabled={saving || revoking} onClick={() => startRename(device)}>
+                  <Icon icon={Pencil} size={15} /> Rename
                 </button>
+                {confirmRevokeId !== device.device_id && (
+                  <button
+                    type="button"
+                    className="secondary"
+                    disabled={saving || revoking}
+                    onClick={() => {
+                      setEditingId(null);
+                      setConfirmRevokeId(device.device_id);
+                      setDeviceError("");
+                    }}
+                  >
+                    <Icon icon={ShieldOff} size={15} /> Revoke
+                  </button>
+                )}
               </div>
             )
           )}
 
-          {!device.revoked_at && (
+          {!device.revoked_at && confirmRevokeId === device.device_id && (
             <div className="registration-form">
-              {confirmRevokeId === device.device_id ? (
-                <>
-                  <p className="warning">
-                    Revoke this device? It will lose access, but data already
-                    copied to it cannot be erased remotely.
-                  </p>
-                  <div className="button-row">
-                    <button
-                      type="button"
-                      disabled={revoking}
-                      onClick={() => handleRevoke(device.device_id)}
-                    >
-                      {revoking ? "Revoking..." : "Confirm revoke"}
-                    </button>
-                    <button
-                      type="button"
-                      disabled={revoking}
-                      onClick={() => setConfirmRevokeId(null)}
-                    >
-                      Cancel
-                    </button>
-                  </div>
-                </>
-              ) : (
-                <button
-                  type="button"
-                  disabled={saving || revoking}
-                  onClick={() => {
-                    setEditingId(null);
-                    setConfirmRevokeId(device.device_id);
-                    setDeviceError("");
-                  }}
-                >
-                  Revoke
+              <p className="warning">
+                <Icon icon={AlertTriangle} size={15} style={{ verticalAlign: "text-bottom", marginRight: 4 }} />
+                Revoke this device? It will lose access, but data already copied to it cannot be erased remotely.
+              </p>
+              <div className="button-row">
+                <button type="button" disabled={revoking} onClick={() => handleRevoke(device.device_id)}>
+                  {revoking ? <><Icon icon={LoaderCircle} size={15} className="spin" /> Revoking...</> : "Confirm revoke"}
                 </button>
-              )}
+                <button type="button" className="secondary" disabled={revoking} onClick={() => setConfirmRevokeId(null)}>
+                  Cancel
+                </button>
+              </div>
             </div>
           )}
         </div>

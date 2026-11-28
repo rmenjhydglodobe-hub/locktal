@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { ExternalLink, X } from "lucide-react";
+import Icon from "./Icon.jsx";
 
 function splitMessage(text) {
   const parts = [];
@@ -85,7 +87,7 @@ export default function MessageText({ text }) {
 
             <div className="link-warning-actions">
               <button type="button" onClick={() => setSelectedLink(null)}>
-                Cancel
+                <Icon icon={X} size={15} /> Cancel
               </button>
 
               <a
@@ -94,7 +96,7 @@ export default function MessageText({ text }) {
                 rel="noopener noreferrer"
                 onClick={() => setSelectedLink(null)}
               >
-                Open
+                <Icon icon={ExternalLink} size={15} /> Open link
               </a>
             </div>
           </div>
